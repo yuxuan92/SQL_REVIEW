@@ -97,4 +97,63 @@ time_8 bytes, 時間 (with time zone)
 interval_16 bytes. 時間區隔
 */--------------------------------------
 
+SELECT
+	timestamp_column,
+	interval_column,
+	timestamp_column - interval_column AS new_date
+FROM date_time_types;
 
+/*--------------------------------------
+timestamp_column|interval_column|new_date
+2018-12-31 14:00:00+08|2 days|2018-12-29 14:00:00+08
+2018-12-31 17:00:00+08|1 mon|2018-11-30 17:00:00+08
+2018-12-30 22:00:00+08|100 years|1918-12-30 22:00:00+08
+2026-04-22 15:26:55.820941+08|7 days|2026-04-15 15:26:55.820941+08
+
+時間計算欄位mew_date的預設格式是 stamptime with time zone
+*/--------------------------------------
+
+SELECT timestamp_column, CAST(timestamp_column AS varchar(10))
+FROM date_time_types;
+/*--------------------------------------
+timestamp_column|timestamp_column
+2018-12-31 14:00:00+08|2018-12-31
+2018-12-31 17:00:00+08|2018-12-31
+2018-12-30 22:00:00+08|2018-12-30
+2026-04-22 15:26:55.820941+08|2026-04-22
+
+2026-04-22
+^^^^^^^^^^
+1234567890
+*/--------------------------------------
+
+SELECT
+	timestamp_column,
+	timestamp_column::varchar(10)
+FROM date_time_types;
+/*--------------------------------------
+CAST(timestamp_column AS varchar(10))
+縮寫
+timestamp_column::varchar(10)
+                ^^
+*/--------------------------------------
+
+COPY(
+	SELECT 
+		numeric_column, 
+		CAST(numeric_column AS integer), 
+		CAST(numeric_column AS varchar(6))
+	FROM number_data_types
+) TO 'C:\temp\NUM.txt'
+WITH(FORMAT CSV, HEADER, DELIMITER '|');
+/*--------------------------------------
+numeric_column|numeric_column|numeric_column
+0.70000|1|0.7000
+2.13579|2|2.1357
+2.13580|2|2.1358
+^^^^^^^
+1234567
+
+numeric_column::integer
+四捨五入
+*/--------------------------------------
