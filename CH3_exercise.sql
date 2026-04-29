@@ -24,7 +24,7 @@ varchar_column|target_date
 2026-04-28|2026-04-28
 abc|[NULL]
 defghi|[NULL]  */
-----------------------------------------------
+-- --------------------------------------------
 
 /*2*****
 表：number_data_types
@@ -34,7 +34,7 @@ defghi|[NULL]  */
 
 SELECT (numeric_column * 1.05)::numeric(20,2) AS tax_included;
 
--Precision（總位數）時，原則是 「寧大勿小」`,PostgreSQL numeric(p, s)Precision最大可以設定到 1000。
+-Precision（總位數）時，原則是「寧大勿小」,PostgreSQL numeric(p, s)Precision最大可以設定到 1000。
 -金額欄位需要處理到億位數 -> numeric(20,2)
 -利率與百分比要精確的小數位 -> numeric(10,6)
 -重量與體積小數預留3為剛好可以從公克/毫升轉公斤/升 -> numeric(10,3)
@@ -43,7 +43,7 @@ SELECT (numeric_column * 1.05)::numeric(20,2) AS tax_included;
 /*我記得以前毛利率是設定四位小數，
 金額欄位至少能處理10億的金額 -> numeric(18, 2), numeric(20, 2)
 毛利率小數位四位 -> numeric(10, 4), numeric(5, 4)*/
-----------------------------------------------
+-- --------------------------------------------
 
 /*3*****
 資料表：date_time_types
@@ -54,7 +54,7 @@ SELECT (numeric_column * 1.05)::numeric(20,2) AS tax_included;
 
 SELECT (timestamp_column - interval_column)::date::varchar(10)
 	FROM date_time_types;
-----------------------------------------------
+-- --------------------------------------------
 
 /*4*****
 資料表：number_data_types
@@ -75,7 +75,7 @@ SELECT (timestamp_column - interval_column)::date::varchar(10)
 
 SELECT EXTRACT(YEAR FROM timestamp_column)::varchar(4)
 	FROM date_time_types;
-----------------------------------------------
+-- --------------------------------------------
 
 /*5*****
 資料表：date_time_types
