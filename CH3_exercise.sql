@@ -34,11 +34,13 @@ defghi|[NULL]  */
 
 SELECT (numeric_column * 1.05)::numeric(20,2) AS tax_included;
 
+/*
 -Precision（總位數）時，原則是「寧大勿小」,PostgreSQL numeric(p, s)Precision最大可以設定到 1000。
 -金額欄位需要處理到億位數 -> numeric(20,2)
 -利率與百分比要精確的小數位 -> numeric(10,6)
 -重量與體積小數預留3為剛好可以從公克/毫升轉公斤/升 -> numeric(10,3)
 -如果真的不確定就不設定，但不嚴謹 -> numeric
+*/
 
 /*我記得以前毛利率是設定四位小數，
 金額欄位至少能處理10億的金額 -> numeric(18, 2), numeric(20, 2)
@@ -87,5 +89,7 @@ SELECT EXTRACT(YEAR FROM timestamp_column)::varchar(4)
 SELECT EXTRACT(YEAR FROM timestamp_column)::varchar(4)
 	FROM date_time_types;
 
--1. EXTRACT萃取各種時間&時間單位&世紀&千禧年
--2. 轉換文字後10會排在2前面
+/*
+1. EXTRACT萃取各種時間&時間單位&世紀&千禧年
+2. 轉換文字後10會排在2前面
+*/
