@@ -133,8 +133,78 @@ CREATE TABLE us_counties_2010 (
 
 -- ---------------------------------------------------------------
 
--- 用COPU將CSV檔匯入
+-- 用COPY將CSV檔匯入======================
 
 COPY us_counties_2010
 FROM 'C:\temp\us_counties_2010.csv'
 WITH(FORMAT CSV, HEADER);
+
+SELECT * FROM us_counties_2010;
+
+-- 資料太多筆， 看土地面積的前3個郡就好
+
+SELECT geo_name, state_us_abbreviation, area_land
+FROM us_counties_2010
+ORDER BY area_land DESC
+LIMIT 3;
+
+/* ===========================
+"geo_name"	"state_us_abbreviation"	"area_land"
+"Yukon-Koyukuk Census Area"	"AK"	376855656455
+"North Slope Borough"	"AK"	229720054439
+"Bethel Census Area"	"AK"	105075822708
+=========================== */
+
+-- 按照經度，取前5筆資料(降冪)
+
+SELECT geo_name, state_us_abbreviation, internal_point_lon
+FROM us_counties_2010
+ORDER BY internal_point_lon DESC
+LIMIT 5;
+
+/*============================
+"geo_name"	"state_us_abbreviation"	"internal_point_lon"
+"Aleutians West Census Area"	"AK"	178.3388130
+"Washington County"	"ME"	-67.6093542
+"Hancock County"	"ME"	-68.3707034
+"Aroostook County"	"ME"	-68.6494098
+"Penobscot County"	"ME"	-68.6574869
+============================*/
+-- 經度小於 0 代表子午線以西
+
+
+
+-- 如果COPY只會入部分欄位 =============================
+
+-- 建一個新的表來演示這件事
+
+CREATE TABLE supervisor_salaries (
+  town varchar(30),
+  county varchar(30),
+  supervisor varchar(30),
+  start_date date,
+  salary money,
+  benifits money
+);
+
+-- 匯入檔案到 supervisor_salaries表格
+
+COPY supervisor_salaries
+FROM 'C:\temp\supervisor_salaries.csv'
+WITH (FORMAT CSV, HEADER);
+
+/*錯誤訊息---------
+ERROR:  missing data for column "start_date"
+CONTEXT:  COPY supervisor_salaries, line 2: "Anytown,Jones,27000" 
+
+SQL state: 22P04
+--------*/
+
+-- 每個欄位的格式不盡相同，所以匯不進去
+-- 指定匯入欄位
+
+COPY supervisor_salaries (town, supervisor, salary)
+FROM 'C:\temp\supervisor_salaries.csv'
+WITH (FORMAT CSV, HEADER);
+
+-- 不過因為postgreSQL不讀表頭，只要匯入欄位的格式對了，就算表頭錯誤也能匯入
