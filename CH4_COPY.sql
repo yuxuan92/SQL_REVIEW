@@ -208,3 +208,63 @@ FROM 'C:\temp\supervisor_salaries.csv'
 WITH (FORMAT CSV, HEADER);
 
 -- 不過因為postgreSQL不讀表頭，只要匯入欄位的格式對了，就算表頭錯誤也能匯入
+
+COPY(
+  
+) TO 'C:\temp\CH4_test.txt' 
+WITH(FORMAT CSV, HEADER, DELIMETER "|");
+
+/*===============================
+town|county|supervisor|start_date|salary|benifits
+Anytown||Jones||NT$27,000.00|
+Bumblyburg||Baker||NT$24,999.00|
+Moetown||Smith||NT$32,100.00|
+Bigville||Kao||NT$31,500.00|
+New Brillig||Carroll||NT$72,690.00|
+aaa|||||
+bbb|||||
+ccc|||||
+================================*/
+
+-- ------------------------------------------------------------------------------
+
+-- 刪除資料表 supervisor_salaries裡的資料
+DELETE FROM supervisor_salaries; 
+
+-- 建立一個臨時資料表，欄位跟supervisor_salaries一樣
+-- TEMPORARY TABLE放在記憶體，運算數度快，但資料庫斷線他就會消失
+CREATE TEMPORARY TABLE supervisor_salaries_temp (LIKE supervisor_salaries);
+
+COPY supervisor_salaries_temp (town, supervisor, salary)
+FROM 'C:\temp\supervisor_salaries.csv'
+WITH (FORMAT CSV, HEADER);
+/*=================
+town|county|supervisor|start_date|salary|benifits
+Anytown||Jones||NT$27,000.00|
+Bumblyburg||Baker||NT$24,999.00|
+Moetown||Smith||NT$32,100.00|
+Bigville||Kao||NT$31,500.00|
+New Brillig||Carroll||NT$72,690.00|
+===================*/
+
+-- 將supervisor_salaries_temp裡的資料都匯到supervisor_salaries, 除了county欄位指定值'Some County'
+INSERT INTO supervisor_salaries (town, county, supervisor, salary)
+SELECT town, 'Some County', supervisor, salary
+FROM supervisor_salaries_temp;
+
+COPY(
+  SELECT * FROM supervisor_salaries
+) TO 'C:\temp\CH4_test.txt'
+WITH(FORMAT CSV, HEADER, DELIMITER '|');
+/*=================
+town|county|supervisor|start_date|salary|benifits
+Anytown|Some County|Jones||NT$27,000.00|
+Bumblyburg|Some County|Baker||NT$24,999.00|
+Moetown|Some County|Smith||NT$32,100.00|
+Bigville|Some County|Kao||NT$31,500.00|
+New Brillig|Some County|Carroll||NT$72,690.00|
+===================*/
+
+DROP TABLE supervisor_salaries_temp;
+
+
