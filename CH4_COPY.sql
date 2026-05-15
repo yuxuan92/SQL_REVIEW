@@ -237,7 +237,7 @@ CREATE TEMPORARY TABLE supervisor_salaries_temp (LIKE supervisor_salaries);
 
 COPY supervisor_salaries_temp (town, supervisor, salary)
 FROM 'C:\temp\supervisor_salaries.csv'
-WITH (FORMAT CSV, HEADER);
+WITH (FORMAT CSV, HEADER, DELIMITER '|');
 /*=================
 town|county|supervisor|start_date|salary|benifits
 Anytown||Jones||NT$27,000.00|
@@ -247,7 +247,8 @@ Bigville||Kao||NT$31,500.00|
 New Brillig||Carroll||NT$72,690.00|
 ===================*/
 
--- 將supervisor_salaries_temp裡的資料都匯到supervisor_salaries, 除了county欄位指定值'Some County'
+-- 將supervisor_salaries_temp裡的資料都匯到supervisor_salaries, 除了county欄位指定帶入值'Some County'
+-- 因為只有twon, county, supervisor, salary四個欄位帶入資料，所以start_date, benifits不會有值
 INSERT INTO supervisor_salaries (town, county, supervisor, salary)
 SELECT town, 'Some County', supervisor, salary
 FROM supervisor_salaries_temp;
@@ -267,4 +268,23 @@ New Brillig|Some County|Carroll||NT$72,690.00|
 
 DROP TABLE supervisor_salaries_temp;
 
+-- COPY匯出資料 ===================================================
 
+-- 匯出整個資料表
+COPY US_counties_2010
+TO 'C:\temp\us_counties_export.txt'
+WITH (FORMAT CSV, HEADER, DELIMITER '|');
+
+-- 匯出特定的資料表欄位
+COPY us_counties_2010 (geo_name, internal_point_lat, internal_point_lon)
+TO 'C:\temp\us_counties_latlon_export.txt'
+WITH (FORMAT CSV, HEADER, DELIMITER '|');
+
+-- 匯出查詢的結果
+COPY (
+  SELECT geo_name, state_us_abbreviation
+  FROM us_counties_2010
+  WHERE geo_name ILIKE '%mill%' --不分大小寫的 LIKE
+)
+TO 'C:\temp\us_counties_mill_export.txt'
+WITH (FORMAT CSV, HEADER, DELIMITER '|');
