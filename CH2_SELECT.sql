@@ -21,6 +21,7 @@ SELECT last_name, school, hire_date
 	WHERE school = 'Myers Middle School';
 
 /* =, <>, !=, >, <, >=, <=, BETWEEN, IN, LIKE(分大小寫), ILIKE(不分大小寫), NOT */
+-- ILIKE：Insenstive，完整術語是 Case-Insensitive
 SELECT school
 	FROM teachers
 	WHERE school != 'F.D. Roosevelt HS';
