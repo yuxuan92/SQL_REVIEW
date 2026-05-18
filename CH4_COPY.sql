@@ -183,7 +183,7 @@ CREATE TABLE supervisor_salaries (
   supervisor varchar(30),
   start_date date,
   salary money,
-  benifits money
+  benefits money
 );
 
 -- 匯入檔案到 supervisor_salaries表格
@@ -237,9 +237,9 @@ CREATE TEMPORARY TABLE supervisor_salaries_temp (LIKE supervisor_salaries);
 
 COPY supervisor_salaries_temp (town, supervisor, salary)
 FROM 'C:\temp\supervisor_salaries.csv'
-WITH (FORMAT CSV, HEADER, DELIMITER '|');
+WITH (FORMAT CSV, HEADER, DELIMETER '|');
 /* ------------------------
-town|county|supervisor|start_date|salary|benifits
+town|county|supervisor|start_date|salary|benefits
 Anytown||Jones||NT$27,000.00|
 Bumblyburg||Baker||NT$24,999.00|
 Moetown||Smith||NT$32,100.00|
@@ -248,7 +248,7 @@ New Brillig||Carroll||NT$72,690.00|
 ------------------------ */
 
 -- 將supervisor_salaries_temp裡的資料都匯到supervisor_salaries, 除了county欄位指定帶入值'Some County'
--- 因為只有twon, county, supervisor, salary四個欄位帶入資料，所以start_date, benifits不會有值
+-- 因為只有twon, county, supervisor, salary四個欄位帶入資料，所以start_date, benefits不會有值
 INSERT INTO supervisor_salaries (town, county, supervisor, salary)
 SELECT town, 'Some County', supervisor, salary
 FROM supervisor_salaries_temp;
@@ -258,7 +258,7 @@ COPY(
 ) TO 'C:\temp\CH4_test.txt'
 WITH(FORMAT CSV, HEADER, DELIMITER '|');
 /* ------------------------
-town|county|supervisor|start_date|salary|benifits
+town|county|supervisor|start_date|salary|benefits
 Anytown|Some County|Jones||NT$27,000.00|
 Bumblyburg|Some County|Baker||NT$24,999.00|
 Moetown|Some County|Smith||NT$32,100.00|
