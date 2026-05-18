@@ -11,8 +11,8 @@ COPY table_name
 FROM 'C:\YourDirectory\your_file.csv'
 WITH (FORMAT CSV, HEARDER)
 
--將 'C:\YourDirectory\your_file.csv' 這個檔案複製到 'table_name' 這個資料庫表格
--Windows路徑寫法是反斜線 '\'，macOS, Linux是斜線 '/'
+-- 將 'C:\YourDirectory\your_file.csv' 這個檔案複製到 'table_name' 這個資料庫表格
+-- Windows路徑寫法是反斜線 '\'，macOS, Linux是斜線 '/'
 
 
 -- ------------------
