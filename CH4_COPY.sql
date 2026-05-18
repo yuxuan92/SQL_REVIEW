@@ -148,12 +148,12 @@ FROM us_counties_2010
 ORDER BY area_land DESC
 LIMIT 3;
 
--- ------------------------
+/* ------------------------
 "geo_name"	"state_us_abbreviation"	"area_land"
 "Yukon-Koyukuk Census Area"	"AK"	376855656455
 "North Slope Borough"	"AK"	229720054439
 "Bethel Census Area"	"AK"	105075822708
--- ------------------------
+------------------------ */
 
 -- 按照經度，取前5筆資料(降冪)
 
