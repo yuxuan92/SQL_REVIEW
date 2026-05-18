@@ -148,12 +148,12 @@ FROM us_counties_2010
 ORDER BY area_land DESC
 LIMIT 3;
 
-/* ===========================
+-- ------------------------
 "geo_name"	"state_us_abbreviation"	"area_land"
 "Yukon-Koyukuk Census Area"	"AK"	376855656455
 "North Slope Borough"	"AK"	229720054439
 "Bethel Census Area"	"AK"	105075822708
-=========================== */
+-- ------------------------
 
 -- 按照經度，取前5筆資料(降冪)
 
@@ -162,19 +162,19 @@ FROM us_counties_2010
 ORDER BY internal_point_lon DESC
 LIMIT 5;
 
-/*============================
+-- ------------------------
 "geo_name"	"state_us_abbreviation"	"internal_point_lon"
 "Aleutians West Census Area"	"AK"	178.3388130
 "Washington County"	"ME"	-67.6093542
 "Hancock County"	"ME"	-68.3707034
 "Aroostook County"	"ME"	-68.6494098
 "Penobscot County"	"ME"	-68.6574869
-============================*/
+-- ------------------------
 -- 經度小於 0 代表子午線以西
 
 
 
--- 如果COPY只會入部分欄位 =============================
+-- 如果COPY只會入部分欄位 -- ------------------------
 
 -- 建一個新的表來演示這件事
 
@@ -214,7 +214,7 @@ COPY(
 ) TO 'C:\temp\CH4_test.txt' 
 WITH(FORMAT CSV, HEADER, DELIMETER "|");
 
-/*===============================
+-- ------------------------
 town|county|supervisor|start_date|salary|benifits
 Anytown||Jones||NT$27,000.00|
 Bumblyburg||Baker||NT$24,999.00|
@@ -224,7 +224,7 @@ New Brillig||Carroll||NT$72,690.00|
 aaa|||||
 bbb|||||
 ccc|||||
-================================*/
+-- ------------------------
 
 -- ------------------------------------------------------------------------------
 
@@ -238,14 +238,14 @@ CREATE TEMPORARY TABLE supervisor_salaries_temp (LIKE supervisor_salaries);
 COPY supervisor_salaries_temp (town, supervisor, salary)
 FROM 'C:\temp\supervisor_salaries.csv'
 WITH (FORMAT CSV, HEADER, DELIMITER '|');
-/*=================
+-- ------------------------
 town|county|supervisor|start_date|salary|benifits
 Anytown||Jones||NT$27,000.00|
 Bumblyburg||Baker||NT$24,999.00|
 Moetown||Smith||NT$32,100.00|
 Bigville||Kao||NT$31,500.00|
 New Brillig||Carroll||NT$72,690.00|
-===================*/
+-- ------------------------
 
 -- 將supervisor_salaries_temp裡的資料都匯到supervisor_salaries, 除了county欄位指定帶入值'Some County'
 -- 因為只有twon, county, supervisor, salary四個欄位帶入資料，所以start_date, benifits不會有值
@@ -257,18 +257,18 @@ COPY(
   SELECT * FROM supervisor_salaries
 ) TO 'C:\temp\CH4_test.txt'
 WITH(FORMAT CSV, HEADER, DELIMITER '|');
-/*=================
+-- ------------------------
 town|county|supervisor|start_date|salary|benifits
 Anytown|Some County|Jones||NT$27,000.00|
 Bumblyburg|Some County|Baker||NT$24,999.00|
 Moetown|Some County|Smith||NT$32,100.00|
 Bigville|Some County|Kao||NT$31,500.00|
 New Brillig|Some County|Carroll||NT$72,690.00|
-===================*/
+-- ------------------------
 
 DROP TABLE supervisor_salaries_temp;
 
--- COPY匯出資料 ===================================================
+-- COPY匯出資料 -- ------------------------
 
 -- 匯出整個資料表
 COPY US_counties_2010
