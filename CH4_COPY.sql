@@ -2,7 +2,7 @@
 -先決條件：1.符合匯入格式的文字檔(eg.逗點分隔檔) 2.可容納資料的table 3.COPY指令匯入
 -如果資料必須包含 ',' 則用雙引號包覆該筆資料。eg.
 John,Doe,"123 Main St., Apart,emt 200",Hyde Park,NY,845-555-1212
-                   ^                     ^                          ^
+         ^                     ^                          ^
 -有些資料庫需要標題列辨別資料，PostgreSQL不需要
 */
 
@@ -22,7 +22,6 @@ smallint_整數,2 bytes
 bigint_整數,8 bytes
 integer_整數,4 bytes
 numeric(10, 7)_長度固定10的數值,小數7位,numeric(s, p)
-
 */
 
 
@@ -133,7 +132,7 @@ CREATE TABLE us_counties_2010 (
 
 -- ---------------------------------------------------------------
 
--- 用COPY將CSV檔匯入======================
+-- 用COPY將CSV檔匯入 --------
 
 COPY us_counties_2010
 FROM 'C:\temp\us_counties_2010.csv'
@@ -141,7 +140,7 @@ WITH(FORMAT CSV, HEADER);
 
 SELECT * FROM us_counties_2010;
 
--- 資料太多筆， 看土地面積的前3個郡就好
+-- 資料太多筆， 看土地面積的前3筆郡就好
 
 SELECT geo_name, state_us_abbreviation, area_land
 FROM us_counties_2010
@@ -210,11 +209,10 @@ WITH (FORMAT CSV, HEADER);
 -- 不過因為postgreSQL不讀表頭，只要匯入欄位的格式對了，就算表頭錯誤也能匯入
 
 COPY(
-  
 ) TO 'C:\temp\CH4_test.txt' 
 WITH(FORMAT CSV, HEADER, DELIMETER "|");
 
--- ------------------------
+/* ------------------------
 town|county|supervisor|start_date|salary|benifits
 Anytown||Jones||NT$27,000.00|
 Bumblyburg||Baker||NT$24,999.00|
@@ -224,7 +222,7 @@ New Brillig||Carroll||NT$72,690.00|
 aaa|||||
 bbb|||||
 ccc|||||
--- ------------------------
+------------------------ */
 
 -- ------------------------------------------------------------------------------
 
@@ -232,20 +230,22 @@ ccc|||||
 DELETE FROM supervisor_salaries; 
 
 -- 建立一個臨時資料表，欄位跟supervisor_salaries一樣
--- TEMPORARY TABLE放在記憶體，運算數度快，但資料庫斷線他就會消失
+
 CREATE TEMPORARY TABLE supervisor_salaries_temp (LIKE supervisor_salaries);
+
+-- TEMPORARY TABLE放在記憶體，運算數度快，但資料庫斷線他就會消失
 
 COPY supervisor_salaries_temp (town, supervisor, salary)
 FROM 'C:\temp\supervisor_salaries.csv'
 WITH (FORMAT CSV, HEADER, DELIMITER '|');
--- ------------------------
+/* ------------------------
 town|county|supervisor|start_date|salary|benifits
 Anytown||Jones||NT$27,000.00|
 Bumblyburg||Baker||NT$24,999.00|
 Moetown||Smith||NT$32,100.00|
 Bigville||Kao||NT$31,500.00|
 New Brillig||Carroll||NT$72,690.00|
--- ------------------------
+------------------------ */
 
 -- 將supervisor_salaries_temp裡的資料都匯到supervisor_salaries, 除了county欄位指定帶入值'Some County'
 -- 因為只有twon, county, supervisor, salary四個欄位帶入資料，所以start_date, benifits不會有值
@@ -257,14 +257,16 @@ COPY(
   SELECT * FROM supervisor_salaries
 ) TO 'C:\temp\CH4_test.txt'
 WITH(FORMAT CSV, HEADER, DELIMITER '|');
--- ------------------------
+/* ------------------------
 town|county|supervisor|start_date|salary|benifits
 Anytown|Some County|Jones||NT$27,000.00|
 Bumblyburg|Some County|Baker||NT$24,999.00|
 Moetown|Some County|Smith||NT$32,100.00|
 Bigville|Some County|Kao||NT$31,500.00|
 New Brillig|Some County|Carroll||NT$72,690.00|
--- ------------------------
+------------------------ */
+
+-- 刪除臨時資料表supervisor_salaries_temp
 
 DROP TABLE supervisor_salaries_temp;
 
@@ -288,3 +290,5 @@ COPY (
 )
 TO 'C:\temp\us_counties_mill_export.txt'
 WITH (FORMAT CSV, HEADER, DELIMITER '|');
+
+-- 有時候會遇到沒有辦法用COPY語法匯入匯出的情形，就要用資料庫的視窗執行(p.69)
