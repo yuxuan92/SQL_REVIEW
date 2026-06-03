@@ -33,3 +33,13 @@ SELECT 9 - 1;    -- 8
 
 -- Multiple -----
 SELECT 3 * 4;    -- 12
+
+-- Divide(傳回商數) -----
+SELECT 11 / 6;	-- 1
+
+-- Modulo(傳回模數) ----- 判斷是否為偶數 -> x % 2 == 0，代表是偶數
+SELECT 11 % 6;	-- 5
+
+-- 因為除數或被除數的資料型態是numeric，所以商數的資料型態一定是numeric
+SELECT 11.0 / 6;	-- 1.8333(無窮小數)
+SELECT CAST (11 AS numeric(3,1)) / 6;	-- 1.8333(無窮小數)
