@@ -41,5 +41,12 @@ SELECT 11 / 6;	-- 1
 SELECT 11 % 6;	-- 5
 
 -- 因為除數或被除數的資料型態是numeric，所以商數的資料型態一定是numeric
-SELECT 11.0 / 6;	-- 1.8333(無窮小數)
-SELECT CAST (11 AS numeric(3,1)) / 6;	-- 1.8333(無窮小數)
+SELECT 11.0 / 6;	-- 1.8333333333333333
+SELECT CAST (11 AS numeric(3,1)) / 6;	-- 1.8333333333333333
+
+-- !!!! PostgreSQL 14+ 已廢棄 !、|/ 等符號運算子，實務上應一律使用 factorial()、sqrt()、cbrt() 函數，邏輯更清晰且不容易報錯。
+SELECT 3 ^ 4;	-- 81
+SELECT |/ 10;	-- 3.1622776601683795
+SELECT sqrt(10);	-- 3.1622776601683795
+SELECT cbrt(10);	-- 2.154434690031884
+SELECT factorial(4); -- 4! = 24
