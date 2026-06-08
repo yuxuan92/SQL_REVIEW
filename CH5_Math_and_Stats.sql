@@ -112,3 +112,33 @@ SELECT
 	(p0010003 + p0010004  + p0010005 + p0010006 + p0010007 + p0010008 + p0010009) - p0010001 AS "Difference"
 FROM us_counties_2010
 ORDER BY "Difference" DESC;
+
+/*
+geo_name|st|total|All Races|Difference
+Baldwin County|AL|182265|182265|0
+Barbour County|AL|27457|27457|0
+Bibb County|AL|22915|22915|0
+Blount County|AL|57322|57322|0
+Autauga County|AL|54571|54571|0		-- Difference 應該都是 0，檢查All Races的數字根Total有沒有對起來
+*/
+
+SELECT 
+	geo_name,
+	state_us_abbreviation AS st,
+	(p0010006::numeric(8,1) / p0010001) * 100 AS pct_asian	-- 因為p0010006本來是integer，p0010006 & p0010001 都是整數，得到的商只會是 0
+FROM us_counties_2010
+ORDER BY pct_asian DESC;
+
+/*
+geo_name|st|pct_asian
+Honolulu County|HI|43.89497769109962474000
+Aleutians East Borough|AK|35.97580388411333970100
+San Francisco County|CA|33.27165361664607226500
+Santa Clara County|CA|32.02237037519322063600
+Kauai County|HI|31.32461880132953749400
+Aleutians West Census Area|AK|28.87969789606185937800
+Maui County|HI|28.80181355516230285300
+Alameda County|CA|26.12511264534643120300
+San Mateo County|CA|24.79194823307365429200
+Queens County|NY|22.94266161359416368300
+*/
