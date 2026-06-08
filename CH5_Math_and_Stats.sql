@@ -50,3 +50,65 @@ SELECT |/ 10;	-- 3.1622776601683795
 SELECT sqrt(10);	-- 3.1622776601683795
 SELECT cbrt(10);	-- 2.154434690031884
 SELECT factorial(4); -- 4! = 24
+
+-- 以上是PostgreSQL運算子的語法，用其他資料庫的話要看一下他自己的語法是什麼
+-- 運算順序
+	-- 1.指數、根
+	-- 2.乘、除、餘數
+	-- 3.加、減
+
+SELECT 7 + 8 * 9;	-- 79
+SELECT (7 + 8) * 9;	-- 135
+SELECT 3 ^ 3 - 1;	-- 26
+SELECT 3 ^ (3 - 1);	-- 9
+
+-- ----------------
+SELECT 
+	geo_name, 
+	state_us_abbreviation AS st,
+	p0010001 AS "total population",	-- 新取的欄位名稱有空白要用 " 包起來
+	p0010003 AS "white alone",
+	p0010004 AS "black",
+	p0010005 AS "Am Indian/Alaska Native Alone",
+	p0010006 AS "Asian Alone",
+	p0010007 AS "Native Hawaiian and Other Pacific Islander Alone",
+	p0010008 AS "Some Other Race Alone",
+	p0010009 AS "Two or More Races"
+FROM us_counties_2010
+LIMIT 5;
+
+/*
+geo_name|st|total population|white alone|black|Am Indian/Alaska Native Alone|Asian Alone|Native Hawaiian and Other Pacific Islander Alone|Some Other Race Alone|Two or More Races
+Autauga County|AL|54571|42855|9643|232|474|32|466|869
+Baldwin County|AL|182265|156153|17105|1216|1348|89|3631|2723
+Barbour County|AL|27457|13180|12875|114|107|29|894|258
+Bibb County|AL|22915|17381|5047|64|22|13|185|203
+Blount County|AL|57322|53068|761|307|117|38|2347|684
+*/
+
+SELECT 
+	geo_name, 
+	state_us_abbreviation AS st,
+	p0010003 AS "white alone",
+	p0010004 AS "black",
+	p0010003 + p0010004 AS "Total White and Black"
+FROM us_counties_2010
+LIMIT 5;
+
+/*
+geo_name|st|white alone|black|Total White and Black
+Autauga County|AL|42855|9643|52498
+Baldwin County|AL|156153|17105|173258
+Barbour County|AL|13180|12875|26055
+Bibb County|AL|17381|5047|22428
+Blount County|AL|53068|761|53829
+*/
+
+SELECT 
+	geo_name, 
+	state_us_abbreviation AS st,
+	p0010001 AS Total,
+	p0010003 + p0010004  + p0010005 + p0010006 + p0010007 + p0010008 + p0010009 AS "All Races",
+	(p0010003 + p0010004  + p0010005 + p0010006 + p0010007 + p0010008 + p0010009) - p0010001 AS "Difference"
+FROM us_counties_2010
+ORDER BY "Difference" DESC;
