@@ -142,3 +142,70 @@ Alameda County|CA|26.12511264534643120300
 San Mateo County|CA|24.79194823307365429200
 Queens County|NY|22.94266161359416368300
 */
+
+-- 變化百分比 --------
+CREATE TABLE percent_change(
+	department varchar(20),
+	spend_2014 numeric(10,2),
+	spend_2017 numeric(10,2)
+);
+
+INSERT INTO percent_change
+VALUES
+	('Building', 250000, 289000),
+	('Assessor', 178556, 179500),
+	('Library', 87777, 90001),
+	('Clerk', 451980, 650000),
+	('Police', 250000, 223000),
+	('Recreation', 199000, 195000);
+
+-- FUNCTION_round(), 小數四捨五入 --------
+SELECT 
+	department, 
+	spend_2014,
+	spend_2017,
+	round((spend_2017 - spend_2014) / spend_2014 * 100, 1) AS pct_change
+FROM percent_change;
+
+/*
+department|spend_2014|spend_2017|pct_change
+Building|250000.00|289000.00|15.6
+Assessor|178556.00|179500.00|0.5
+Library|87777.00|90001.00|2.5
+Clerk|451980.00|650000.00|43.8
+Police|250000.00|223000.00|-10.8
+Recreation|199000.00|195000.00|-2.0
+*/
+
+-- AGGREGATE FUNCTIONS_sum(), avg(), 匯總函示: 加總、平均 --------
+SELECT 
+	sum(p0010001) AS "County Sum",
+	round(avg(p0010001), 0) AS "County Average"
+FROM us_counties_2010;
+
+/*
+County Sum|County Average
+308745538|98233
+*/
+
+-- median(), 中位數 = pr.50 --------
+-- SQL裡沒有, 所以在SQL用percentile函示做這件事
+-- 舉例：10,11,10,9,13,12, 中位數是11.5, 按照順序排：9,10,10,11,12,13, 10跟11的中間 -> 10.5
+-- percentile_cont(n), 回傳連續的資料值 ***
+-- percentile_disc(n), 離散, 回傳 n百分位的最後一個數字
+CREATE TABLE percentile_test(
+	numbers integer
+);
+
+INSERT INTO percentile_test(numbers) VALUES
+	(1), (2), (3), (4), (5), (6);
+
+SELECT
+	percentile_cont(.5) WITHIN GROUP (ORDER BY numbers),
+	percentile_disc(.5) WITHIN GROUP (ORDER BY numbers)
+FROM percentile_test;
+
+/*
+percentile_cont|percentile_disc
+3.5|3
+*/
