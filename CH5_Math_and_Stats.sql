@@ -26,7 +26,7 @@ WITH(FORMAT CSV, HEADER);
 /* -------------
 ?column?
 4
-------------- */  -- 欄位名稱 ?column? 是正常的， 因為沒有指定欄位跟表格
+----------------------------------------- */  -- 欄位名稱 ?column? 是正常的， 因為沒有指定欄位跟表格
 
 -- Deduct -----
 SELECT 9 - 1;    -- 8
@@ -102,7 +102,7 @@ Baldwin County|AL|156153|17105|173258
 Barbour County|AL|13180|12875|26055
 Bibb County|AL|17381|5047|22428
 Blount County|AL|53068|761|53829
-*/
+----------------------------------------- */
 
 SELECT 
 	geo_name, 
@@ -120,7 +120,7 @@ Barbour County|AL|27457|27457|0
 Bibb County|AL|22915|22915|0
 Blount County|AL|57322|57322|0
 Autauga County|AL|54571|54571|0		-- Difference 應該都是 0，檢查All Races的數字根Total有沒有對起來
-*/
+----------------------------------------- */
 
 SELECT 
 	geo_name,
@@ -141,7 +141,7 @@ Maui County|HI|28.80181355516230285300
 Alameda County|CA|26.12511264534643120300
 San Mateo County|CA|24.79194823307365429200
 Queens County|NY|22.94266161359416368300
-*/
+----------------------------------------- */
 
 -- 變化百分比 --------
 CREATE TABLE percent_change(
@@ -175,7 +175,7 @@ Library|87777.00|90001.00|2.5
 Clerk|451980.00|650000.00|43.8
 Police|250000.00|223000.00|-10.8
 Recreation|199000.00|195000.00|-2.0
-*/
+----------------------------------------- */
 
 -- AGGREGATE FUNCTIONS_sum(), avg(), 匯總函示: 加總、平均 --------
 SELECT 
@@ -186,7 +186,7 @@ FROM us_counties_2010;
 /*
 County Sum|County Average
 308745538|98233
-*/
+----------------------------------------- */
 
 -- median(), 中位數 = pr.50 --------
 -- SQL裡沒有, 所以在SQL用percentile函示做這件事
@@ -208,4 +208,17 @@ FROM percentile_test;
 /*
 percentile_cont|percentile_disc
 3.5|3
-*/
+----------------------------------------- */
+
+SELECT 
+	sum(p0010001) AS "County Sum",
+	round(avg(p0010001), 0) AS "County Average",
+	percentile_cont(.5) WITHIN GROUP (ORDER BY p0010001) AS "County Median"
+FROM us_counties_2010;
+
+-- 中位數 > 平均值 => 右偏(尾巴在右邊), 大部分數值落在平均數左邊
+
+/*
+County Sum|County Average|County Median
+308745538|98233|25857
+----------------------------------------- */
