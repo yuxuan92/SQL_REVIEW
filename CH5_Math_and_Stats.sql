@@ -222,3 +222,57 @@ FROM us_counties_2010;
 County Sum|County Average|County Median
 308745538|98233|25857
 ----------------------------------------- */
+
+SELECT percentile_cont(array[.25, .5, .7])
+	WITHIN GROUP (ORDER BY p0010001) AS "quartiles"
+FROM us_counties_2010;
+
+-- 四分位
+-- 構造函式(陣列)， 把資料放在陣列裡
+
+/*
+"quartiles"
+{11104.5,25857,52364.39999999997}
+----------------------------------------- */
+
+SELECT unnest(
+	percentile_cont(array[.25, .5, .7])
+	WITHIN GROUP (ORDER BY p0010001)
+)AS "quartiles"
+FROM us_counties_2010;
+
+-- 上面那個是陣列， 用 unnest 轉換成陣列
+
+/*
+"quartiles"
+11104.5
+25857
+52364.39999999997
+----------------------------------------- */
+
+-- 自建一個函數， 後面會講建立函數， 這邊先帶過
+-- 因為PostSQL裡面沒有 median() 
+
+CREATE OR REPLACE FUNCTION _final_median(anyarray)
+	RETURNS float8 AS
+$$
+	WITH q AS
+	(
+		SELECT val
+		FROM unnest($1) val
+		WHERE VAL IS NOT NULL
+		ORDER BY 1
+	),
+	cnt AS
+	(
+		SELECT COUNT(*) AS c FROM q
+	)
+	SELECT AVG(val)::float8
+	FROM
+	(
+		SELECT val FROM q
+		LIMIT 2 - MOD((SELECT c FROM cnt), 2)
+		OFFSET GREATEST(CEIL((SELECT c FROM cnt)/ 2.0) - 1.0)
+	) q2;
+$$
+LANGUAGE sql IMMUTABLE;
