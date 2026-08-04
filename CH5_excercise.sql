@@ -35,8 +35,8 @@ SELECT 18.0 / 5;
 SELECT 4 + 3 * 2 ^ 2;
 SELECT (4 + 3) * 2 ^ 2; */
 
-SELECT 18 / 5;	integer
-SELECT 18.0 / 5;	numeric
+SELECT 18 / 5;	-- integer
+SELECT 18.0 / 5;	-- numeric
 SELECT 4 + 3 * 2 ^ 2;	-- X：integer, 因為有指數運算所以是numeric
 SELECT (4 + 3) * 2 ^ 2;	-- X：integer, 因為有指數運算所以是numeric
 -- ----------
@@ -84,7 +84,7 @@ SELECT
     spend_2017 - spend_2014 AS "Difference",
     round( (spend_2017 - spend_2014) / spend_2014 * 100,1) AS "Rate"
 FROM percent_change
-WHERE Rate < 0	-- 比較有效率的寫法：WHERE spend_2017 < spend_2014
+WHERE spend_2017 < spend_2014	-- Rate 不是這個層級所以不可以寫：WHERE Rate < 0
 ORDER BY "Rate" ASC;
 -- ----------
 /*6. 州人口統計比較
@@ -108,5 +108,5 @@ SELECT state_us_abbreviation,
 	mode() WITHIN GROUP (ORDER BY p0010001) AS "Mode"
 FROM us_counties_2010
 WHERE state_us_abbreviation IN ('CA','NY','TX')
-GROUP BY state_us_abbreviation DESC
-ORDER BY Median;
+GROUP BY state_us_abbreviation
+ORDER BY Median DESC;
