@@ -276,3 +276,29 @@ $$
 	) q2;
 $$
 LANGUAGE sql IMMUTABLE;
+
+-- ----------
+
+SELECT sum(p0010001) AS "County Sum",
+	round(AVG(p0010001), 0) AS "County Average",
+	median(p0010001) AS "County Median",
+	percentile_cont(.5) WITHIN GROUP (ORDER BY p0010001) AS "50th Percentile"
+FROM us_counties_2010;
+
+/*
+"County Sum"	"County Average"	"County Median"	"50th Percentile"
+308745538	98233	25857	25857
+----------------------------------------- */
+
+-- Me = P50, median比較直覺, 但是 percentile_cont 在SQL跑比較快
+-- ----------
+
+-- mode() 眾數
+
+SELECT mode() WITHIN GROUP (ORDER BY p0010001)
+FROM us_counties_2010;
+
+/*
+"mode"
+21720
+----------------------------------------- */
