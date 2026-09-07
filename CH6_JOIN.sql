@@ -119,3 +119,166 @@ ON schools_left.id = schools_right.id;
 */
 
 -- -- 以 right(FROM 後面那個表格) 為主， 把另一個串近來 => 所以 schools_right 的資料是完整的
+
+-- FULL OUTER JOIN----------
+SELECT *
+FROM schools_left FULL JOIN schools_right
+ON schools_left.id = schools_right.id;
+
+/*
+"id"	"left_school"				"id-2"	"right_school"
+1		"Oak Street School"			1		"Oak Street School"
+2		"Roosevelt High School"		2		"Roosevelt High School"
+5		"Washington Middle School"		
+6		"Jefferson High School"		6		"Jefferson High School"
+									4		"Chase Magnet Academy"
+									3		"Morrison Elementary"
+*/
+
+-- 少用， 但可以檢查重疊的資料有多少
+
+-- CROSS JOIN----------
+-- Cartesian product, left_schools 有 4 筆資料, right_schools 有 5 筆資料 => 一共會有 4 * 5 的組合
+-- 資料量很多會跑很久
+SELECT *
+FROM schools_left CROSS JOIN schools_right;
+
+/*
+"id"	"left_school"	"id-2"	"right_school"
+1	"Oak Street School"	1	"Oak Street School"
+1	"Oak Street School"	2	"Roosevelt High School"
+1	"Oak Street School"	3	"Morrison Elementary"
+1	"Oak Street School"	4	"Chase Magnet Academy"
+1	"Oak Street School"	6	"Jefferson High School"
+2	"Roosevelt High School"	1	"Oak Street School"
+2	"Roosevelt High School"	2	"Roosevelt High School"
+2	"Roosevelt High School"	3	"Morrison Elementary"
+2	"Roosevelt High School"	4	"Chase Magnet Academy"
+2	"Roosevelt High School"	6	"Jefferson High School"
+5	"Washington Middle School"	1	"Oak Street School"
+5	"Washington Middle School"	2	"Roosevelt High School"
+5	"Washington Middle School"	3	"Morrison Elementary"
+5	"Washington Middle School"	4	"Chase Magnet Academy"
+5	"Washington Middle School"	6	"Jefferson High School"
+6	"Jefferson High School"	1	"Oak Street School"
+6	"Jefferson High School"	2	"Roosevelt High School"
+6	"Jefferson High School"	3	"Morrison Elementary"
+6	"Jefferson High School"	4	"Chase Magnet Academy"
+6	"Jefferson High School"	6	"Jefferson High School"
+*/
+
+-- NULL ----------
+SELECT *
+FROM schools_left LEFT JOIN schools_right
+ON schools_left.id = schools_right.id
+WHERE schools_right.id IS NULL;	
+
+/*
+"id"	"left_school"				"id-2"	"right_school"
+5		"Washington Middle School"		
+*/
+
+-- ie. left_schools 有，但 right_schools 沒有
+
+-- 有 JOIN 欄位名又重複的話要說是哪個表格的哪個欄位，不過最好是養成習慣都加上表格名
+SELECT schools_left.id,
+	schools_left.left_school,
+	schools_right.right_school
+FROM schools_left JOIN schools_right
+ON schools_left.id = schools_right.id;
+
+-- 用別名簡化程式碼 ----------
+SELECT lt.id,
+	lt.left_school,
+	rt.right_school
+FROM schools_left AS lt JOIN schools_right AS rt
+ON lt.id = rt.id;
+
+-- 建個表等等用
+CREATE TABLE schools_enrollment(
+	id INTEGER,
+	enrollment INTEGER
+);
+
+CREATE TABLE schools_grades(
+	id INTEGER,
+	grades VARCHAR(10)
+);
+
+INSERT INTO schools_enrollment(id, enrollment)
+VALUES
+	(1, 360),
+	(2,1001),
+	(5, 450),
+	(6, 927);
+
+INSERT INTO schools_grades(id, grades)
+VALUES
+	(1, 'K-3'),
+	(2, '9-12'),
+	(5, '6-8'),
+	(6, '9-12');
+
+-- JOIN 再結合一個表 ----------
+SELECT lt.id, 
+	lt.left_school, 
+	en.enrollment, 
+	gr.grades
+FROM schools_left AS lt LEFT JOIN schools_enrollment AS en
+	ON lt.id = en.id
+LEFT JOIN schools_grades AS gr
+	ON lt.id = gr.id;		-- 以 lt.id 為主把另外兩張表串近來
+
+/*
+"id"	"left_school"				"enrollment"	"grades"
+1		"Oak Street School"			360				"K-3"
+2		"Roosevelt High School"		1001			"9-12"
+5		"Washington Middle School"	450				"6-8"
+6		"Jefferson High School"		927				"9-12"
+*/
+
+-- 建個表等等用
+
+CREATE TABLE us_counties_2000 (
+    geo_name varchar(90),              -- County/state name,
+    state_us_abbreviation varchar(2),  -- State/U.S. abbreviation
+    state_fips varchar(2),             -- State FIPS code
+    county_fips varchar(3),            -- County code
+    p0010001 integer,                  -- Total population
+    p0010002 integer,                  -- Population of one race:
+    p0010003 integer,                      -- White Alone
+    p0010004 integer,                      -- Black or African American alone
+    p0010005 integer,                      -- American Indian and Alaska Native alone
+    p0010006 integer,                      -- Asian alone
+    p0010007 integer,                      -- Native Hawaiian and Other Pacific Islander alone
+    p0010008 integer,                      -- Some Other Race alone
+    p0010009 integer,                  -- Population of two or more races
+    p0010010 integer,                  -- Population of two races
+    p0020002 integer,                  -- Hispanic or Latino
+    p0020003 integer                   -- Not Hispanic or Latino:
+);
+
+COPY us_counties_2000
+FROM 'C:\temp\us_counties_2000.csv'
+WITH (FORMAT CSV, HEADER);
+
+SELECT c2010.geo_name,
+	c2010.state_us_abbreviation AS state,
+	c2010.p0010001 AS pop_2010,
+	c2000.p0010001 AS pop_2000,
+	c2010.p0010001 - c2000.p0010001 AS raw_change,
+	round( (c2010.p0010001::numeric(8,1) - c2000.p0010001) / c2000.p0010001 * 100, 1) AS pct_change
+FROM us_counties_2010 c2010 JOIN us_counties_2000 c2000
+ON c2010.state_fips = c2000.state_fips			-- 	州代碼
+	AND c2010.county_fips = c2000.county_fips	--	郡代碼  =>  州代碼+郡代碼 : 唯一KEY值
+	AND c2010.p0010001 <> c2000.p0010001		--  人口有變化的才看
+ORDER BY pct_change DESC;
+
+/*
+"geo_name"			"state"	"pop_2010"	"pop_2000"	"raw_change"	"pct_change"
+"Kendall County"	"IL"	114736		54544		60192			110.4
+"Pinal County"		"AZ"	375770		179727		196043			109.1
+"Flagler County"	"FL"	95696		49832		45864			92.0
+"Lincoln County"	"SD"	44828		24131		20697			85.8
+"Loudoun County"	"VA"	312311		169599		142712			84.1
+*/
