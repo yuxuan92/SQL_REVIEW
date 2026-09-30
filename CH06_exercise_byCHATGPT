@@ -1,4 +1,4 @@
---1.員工＋部門資料
+-- 1.員工＋部門資料
 /*--------------------
 列出所有員工的：
   first_name
@@ -22,7 +22,7 @@ SELECT e.first_name,
 FROM employees AS e JOIN departments AS d
 ON e.dept_id = d.dept_id;
 
---2.哪些部門沒有員工？
+-- 2.哪些部門沒有員工？
 /*--------------------
 假設現在多新增一個部門：
   INSERT INTO departments(dept, city)
