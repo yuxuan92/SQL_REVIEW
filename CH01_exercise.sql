@@ -33,7 +33,7 @@ DROP TABLE sales_records;
 
 CREATE TABLE sales_records(
 	sale_id bigserial,
-  store_id varchar(6),
+	store_id varchar(6),
 	store_name varchar(50),
 	product_name varchar(50),
 	sale_amount numeric,
